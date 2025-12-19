@@ -1,5 +1,11 @@
-#ifdef DUNGEON_H
+#ifndef DUNGEON_H
 #define DUNGEON_H
+
+void set_console_char_size(short cols, short rows);
+void init();
+
+extern int screenwidth;
+extern int screenheight;
 
 typedef struct 
 {
@@ -13,7 +19,6 @@ typedef struct
     int level;
 
 } player;
-
 
 
 #endif 
