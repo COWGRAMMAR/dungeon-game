@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <windows.h>
 #include <locale.h>
+#include <time.h>
 #include "dungeon.h"
 
 int screenwidth = 150;
