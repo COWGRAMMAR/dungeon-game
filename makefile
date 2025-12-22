@@ -7,7 +7,7 @@ OBJ_DIR = build
 SRC = main.c init.c logic.c
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
-EXE = $(ROOT)main.exe
+EXE = main.exe
 
 app: $(OBJ)
 	@del /Q $(EXE)
@@ -21,5 +21,5 @@ $(OBJ_DIR)/%.o: %.c
 
 cln:
 	@cls
-	@del /Q "$(OBJ_DIR)\*".o "$(EXE)"
+	@del /Q $(OBJ_DIR)\*.o $(EXE)
 	@echo Semua file dihapus
