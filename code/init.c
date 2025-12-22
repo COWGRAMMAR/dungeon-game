@@ -1,13 +1,10 @@
 #include <curses.h>
-#include <windows.h> 
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include <windows.h>
 #include <locale.h>
 #include "dungeon.h"
 
-int screenwidth = ((200 * 2) + 1);
-int screenheight = 51;
+int screenwidth = 150;
+int screenheight = 40;
 
 WINDOW *win;
 
@@ -53,6 +50,8 @@ void init()
     // initialize window
     win = initscr();
 
+    resize_term(screenheight, screenwidth);
+
     // player input
     keypad(win, TRUE);
     noecho();
@@ -66,4 +65,55 @@ void init()
         exit(1);
     }
     start_color();
+}
+
+void tester()
+{
+    // set up windows terimnal and initialize game
+    int max_y, max_x;
+    getmaxyx(stdscr, max_y, max_x);
+
+    // Clear screen
+    clear();
+
+    // Tampilkan informasi
+    attron(A_BOLD);
+    mvprintw(0, 0, "=== TEST UKURAN TERMINAL ===");
+    attroff(A_BOLD);
+
+    mvprintw(2, 2, "Ukuran yang diminta: %d lebar x %d tinggi", screenwidth, screenheight);
+    mvprintw(3, 2, "Ukuran aktual curses: %d lebar x %d tinggi", max_x, max_y);
+
+    mvprintw(5, 2, "Coba tekan beberapa tombol:");
+    mvprintw(6, 4, "- Tekan 'q' untuk keluar");
+    mvprintw(7, 4, "- Tekan arrow keys untuk test");
+    mvprintw(8, 4, "- Tekan space bar");
+
+    // Gambar border di sekitar window
+    box(stdscr, 0, 0);
+
+    // Tampilkan petunjuk di bagian bawah
+    attron(COLOR_PAIR(3) | A_BOLD);
+    mvprintw(max_y - 2, 2, "Tekan 'q' untuk keluar dari program");
+    attroff(COLOR_PAIR(3) | A_BOLD);
+    // Draw a box to visualize boundaries
+    for (int x = 0; x < max_x; x++)
+    {
+        mvaddch(5, x, '-');
+        mvaddch(max_y - 5, x, '-');
+    }
+    for (int y = 5; y < max_y - 4; y++)
+    {
+        mvaddch(y, 0, '|');
+        mvaddch(y, max_x - 1, '|');
+    }
+
+    // Instructions
+    attron(COLOR_PAIR(3));
+    mvprintw(max_y - 3, 2, "Press ANY key to exit");
+    attroff(COLOR_PAIR(3));
+    refresh();
+    getch();
+
+    endwin();
 }

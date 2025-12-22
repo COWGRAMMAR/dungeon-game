@@ -3,6 +3,7 @@
 
 void set_console_char_size(short cols, short rows);
 void init();
+void tester();
 
 extern int screenwidth;
 extern int screenheight;

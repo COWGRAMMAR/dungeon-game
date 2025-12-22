@@ -2,22 +2,26 @@ CC = gcc
 CFLAGS = -Wall -Wextra -I C:\\PDCurses\\include 
 LDFLAGS = -L C:\\PDCurses\\wincon -lpdcurses
 
-DIR = dungeon
-OBJ = main.o init.o
-
+DIR = code
+OBJ = main.o init.o logic.o
+EXE = main.exe
 
 app: $(OBJ)
-	@del main
-	@echo File Siap dijalankan
+	@del *.exe
+	@echo File $(EXE) sudah dibersihkan 
 	@$(CC) $(OBJ) -o main $(LDFLAGS)
+	@echo File Siap dijalankan
 
-main.o: main.c 
+main.o: $(DIR)/main.c 
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-init.o: init.c
+init.o: $(DIR)/init.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+logic.o: $(DIR)/logic.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 cln:
 	@cls
-	@del *.o main
+	@del *.o *.exe
 	@echo Semua file dihapus
