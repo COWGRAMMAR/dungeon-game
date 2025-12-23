@@ -4,7 +4,7 @@ LDFLAGS = -L C:/PDCurses/wincon -lpdcurses
 
 OBJ_DIR = build
 
-SRC = main.c init.c logic.c
+SRC = main.c init.c logic.c room.c ui.c
 OBJ = $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 EXE = main.exe
@@ -17,7 +17,7 @@ app: $(OBJ)
 
 $(OBJ_DIR)/%.o: %.c 
 	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 cln:
 	@cls

@@ -20,7 +20,7 @@ void set_console_char_size(short cols, short rows)
     SetConsoleScreenBufferSize(hOut, bufferSize);
 
     // step 2: Set the window size according to the buffer
-    SMALL_RECT windowSize = {0, 0, cols - 1, rows - 1};
+    SMALL_RECT windowSize = {0, 0, cols, rows};
     SetConsoleWindowInfo(hOut, TRUE, &windowSize);
 
     // step 3: lock resize & maximize
@@ -55,6 +55,7 @@ void init()
 
     // player input
     keypad(win, TRUE);
+    nodelay(win, TRUE);
     noecho();
     curs_set(0);
 
@@ -113,8 +114,4 @@ void tester()
     attron(COLOR_PAIR(3));
     mvprintw(max_y - 3, 2, "Press ANY key to exit");
     attroff(COLOR_PAIR(3));
-    refresh();
-    getch();
-
-    endwin();
 }

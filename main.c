@@ -30,10 +30,14 @@ int main(int argc, char const *argv[])
                "\tdefine dimensions of the screen\n\nDefault dimensions are 59x25\n");
         exit(1);
     }
+
     set_console_char_size(screenwidth, screenheight);
     init();
-    tester();
+    game();
+
+    wrefresh(arena);
     getch();
+    endwin();
 
     return 0;
 }
