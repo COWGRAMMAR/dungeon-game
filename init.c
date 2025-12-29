@@ -9,6 +9,7 @@ int screenheight = 40;
 
 WINDOW *win;
 
+// initialize windows terminal funcgtion
 void set_console_char_size(short cols, short rows)
 {
     HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -40,6 +41,7 @@ void set_console_char_size(short cols, short rows)
                      SWP_NOZORDER | SWP_FRAMECHANGED);
 }
 
+// initialize terminal function
 void init()
 {
     // initialize extended ascii character
@@ -54,8 +56,8 @@ void init()
     resize_term(screenheight, screenwidth);
 
     // player input
-    keypad(win, TRUE);
-    nodelay(win, TRUE);
+    keypad(stdscr, TRUE);
+    nodelay(stdscr, TRUE);
     noecho();
     curs_set(0);
 
@@ -66,9 +68,20 @@ void init()
         fprintf(stderr, "Your terminal does not support color\n");
         exit(1);
     }
+
     start_color();
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(4, COLOR_GREEN, COLOR_BLACK);
+    init_pair(5, COLOR_CYAN, COLOR_BLACK);
+    init_pair(6, COLOR_RED, COLOR_BLACK);
+
+    clear();
+    refresh();
 }
 
+// tester function for setup window terminal
 void tester()
 {
     // set up windows terimnal and initialize game
