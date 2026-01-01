@@ -44,9 +44,18 @@ typedef struct
     tile_type type;
     bool is_walkable;
     bool is_transparent;
-    char display_char;
+    int display_char;
     int color_pair;
 } tile_properties;
+
+// room bounderies
+typedef struct 
+{
+    int x, y;
+    int width, height;
+    bool is_active;
+} room_bounds;
+
 
 // structure map properties
 typedef struct
@@ -57,6 +66,9 @@ typedef struct
     vec2 player_dir;
     bool is_running;
     WINDOW *arena_window;
+    room_bounds room;
+    int room_x, room_y;        
+    int room_w, room_h; 
 } game_map;
 
 // game state
@@ -66,7 +78,6 @@ typedef struct
     bool is_running;
     bool skip_frame;
     DWORD last_move_time;
-    int arena_size;
 } game_state;
 
 #define DelayInput 75
@@ -79,7 +90,7 @@ typedef struct
 extern WINDOW *create_arena_box(int x, int y, int size_x, int size_y);  // arena border
 extern WINDOW *create_box_center(int x, int y, int size_x, int size_y); // universal border with allign center
 extern WINDOW *create_box(int x, int y, int size_x, int size_y);        // universal border
-
+void location_of_arena(int x, int y, game_map *map);
 void ui_game(game_map *map); // ui for in game
 
 //============================== ui function prototype ==============================//
@@ -112,4 +123,13 @@ void map_destroy(game_map *map); // logic state game
 
 //============================== logic function prototype ==============================//
 
+//============================== room function prototype ==============================//
+#define ROOM_SMALL   1
+#define ROOM_MEDIUM  2
+#define ROOM_LARGE   3
+void wall(game_map *map);
+void door(int type_dungeon_size, int type_door, int facing, game_map *map);
+void door_4_side(int type_dungeon_size, int type_door, game_map *map);
+
+//============================== room function prototype ==============================//
 #endif
