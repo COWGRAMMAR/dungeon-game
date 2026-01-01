@@ -36,7 +36,7 @@ int main(int argc, char const *argv[])
     init_tile_properties();
 
     game_state state = {
-        .current_map = create_map(25, 25), // arena_size dari kode Anda = 30
+        .current_map = create_map(34, 34), // arena_size dari kode Anda = 30
         .is_running = true,
         .skip_frame = false,
         .last_move_time = 0};

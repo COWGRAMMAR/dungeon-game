@@ -197,7 +197,7 @@ void draw(game_map *map)
             tile_properties *props = &tile_props[tile];
 
             wattron(map->arena_window, COLOR_PAIR(props->color_pair));
-            mvwaddch(map->arena_window, y + 1, (x * 2) + 1, props->display_char);
+            mvwaddch(map->arena_window, y, (x * 2) + 1, props->display_char);
             wattroff(map->arena_window, COLOR_PAIR(props->color_pair));
         }
     }
@@ -206,9 +206,7 @@ void draw(game_map *map)
     mvwaddch(map->arena_window, map->player_dir.y + 1, (map->player_dir.x * 2) + 1, 'O'); // Karakter player dari kode Anda
     wattroff(map->arena_window, COLOR_PAIR(4) | A_BOLD);
 
-    wattron(map->arena_window, COLOR_PAIR(1));
-    mvwprintw(map->arena_window, map->height_tile_map + 1, 1, "Pos: (%d, %d) | Use WASD/Arrows", map->player_dir.x, map->player_dir.y);
-    wattroff(map->arena_window, COLOR_PAIR(1));
+    
 
     wrefresh(map->arena_window);
 }

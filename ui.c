@@ -37,16 +37,16 @@ void location_of_arena(int x, int y, game_map *map)
 {
     if (map && map->arena_window == NULL)
     {
-       // potition for arena windows
-        int arena_x = ((screenwidth / 2) - 1) - (map->width_tile_map);
-        int arena_y = 4; 
+        // potition for arena windows
+        int arena_x = ((screenwidth / 2)) - (map->width_tile_map);
+        int arena_y = 3;
 
         int x_final_arena = arena_x + x;
         int y_final_arena = arena_y + y;
 
-        map->arena_window = newwin(map->height_tile_map + 2, (map->width_tile_map * 2) + 2, y_final_arena, x_final_arena);
-        keypad(map->arena_window, TRUE);  
-        nodelay(map->arena_window, TRUE); 
+        map->arena_window = newwin(map->height_tile_map, (map->width_tile_map * 2), y_final_arena, x_final_arena);
+        keypad(map->arena_window, TRUE);
+        nodelay(map->arena_window, TRUE);
     }
 }
 
@@ -68,7 +68,7 @@ void ui_game(game_map *map)
     PANEL *setting_border_p = new_panel(setting_border);
     PANEL *arena_p = NULL;
 
-    location_of_arena(1, 1, map);
+    location_of_arena(0, 0, map);
 
     if (map && map->arena_window)
     {
@@ -102,4 +102,8 @@ void ui_game(game_map *map)
     {
         wrefresh(map->arena_window);
     }
+
+    wattron(map->arena_window, COLOR_PAIR(1));
+    mvwprintw(setting_border, 0, 0, "Pos: (%d, %d) | Use WASD/Arrows", map->player_dir.x, map->player_dir.y);
+    wattroff(map->arena_window, COLOR_PAIR(1));
 }
