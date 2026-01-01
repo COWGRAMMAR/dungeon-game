@@ -5,15 +5,11 @@
 #include <string.h>
 #include <stdlib.h>
 
-// arena size
-int arena_size = 30;
 
 vec2 dir = {0, 0};
 // vec2 player_dir = {0, 0};
 
 tile_properties tile_props[TILE_COUNT];
-
-
 
 void init_tile_properties()
 {
@@ -37,6 +33,12 @@ void init_tile_properties()
     tile_props[TILE_DOOR_CLOSED].is_transparent = false;
     tile_props[TILE_DOOR_CLOSED].display_char = '+';
     tile_props[TILE_DOOR_CLOSED].color_pair = 3;
+
+    tile_props[TILE_DOOR_OPEN].type = TILE_DOOR_CLOSED;
+    tile_props[TILE_DOOR_OPEN].is_walkable = true;
+    tile_props[TILE_DOOR_OPEN].is_transparent = true;
+    tile_props[TILE_DOOR_OPEN].display_char = '+';
+    tile_props[TILE_DOOR_OPEN].color_pair = 4;
 }
 
 game_map *create_map(int width_tile_map, int height_tile_map)
@@ -186,7 +188,6 @@ void draw(game_map *map)
         return;
 
     werase(map->arena_window);
-    box(map->arena_window, 0, 0);
 
     for (int y = 0; y < map->height_tile_map; y++)
     {
@@ -215,26 +216,18 @@ void draw(game_map *map)
 // Membuat map sederhana seperti ruangan di kode Anda
 void create_simple_arena(game_map *map)
 {
-    // Buat ruangan di tengah
-    int room_width = map->width_tile_map - 4;
-    int room_height = map->height_tile_map - 4;
-    int room_start_x = 2;
-    int room_start_y = 2;
+    if (!map || !map->tiles)
+        return;
 
-    for (int y = room_start_y; y < room_start_y + room_height; y++)
-    {
-        for (int x = room_start_x; x < room_start_x + room_width; x++)
-        {
-            map->tiles[y][x] = TILE_FLOOR;
-        }
-    }
+    
+    int mid_y = map->height_tile_map / 2;
+    int mid_x = map->width_tile_map / 2;
 
-    // Tambahkan beberapa pintu
-    map->tiles[room_start_y + room_height / 2][room_start_x - 1] = TILE_DOOR_CLOSED;
-    map->tiles[room_start_y + room_height / 2][room_start_x + room_width] = TILE_DOOR_CLOSED;
+    // Set player position di tengah
+    map->player_dir = (vec2){mid_x, mid_y};
 
-    // Set player position
-    map->player_dir = (vec2){room_start_x + 2, room_start_y + 2};
+    wall(map);
+    door_4_side(1, 0, map);
 }
 
 // loop game logic function

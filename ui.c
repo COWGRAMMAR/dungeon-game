@@ -33,6 +33,23 @@ WINDOW *create_box(int x, int y, int size_x, int size_y)
     return boxs;
 }
 
+void location_of_arena(int x, int y, game_map *map)
+{
+    if (map && map->arena_window == NULL)
+    {
+       // potition for arena windows
+        int arena_x = ((screenwidth / 2) - 1) - (map->width_tile_map);
+        int arena_y = 4; 
+
+        int x_final_arena = arena_x + x;
+        int y_final_arena = arena_y + y;
+
+        map->arena_window = newwin(map->height_tile_map + 2, (map->width_tile_map * 2) + 2, y_final_arena, x_final_arena);
+        keypad(map->arena_window, TRUE);  
+        nodelay(map->arena_window, TRUE); 
+    }
+}
+
 void ui_game(game_map *map)
 {
     if (!map)
@@ -46,25 +63,12 @@ void ui_game(game_map *map)
     gameplay_border = create_box_center(0, 2, 36, 36);
     setting_border = create_box(allign_left + 9, 5, 11, 29);
 
-    if (map && map->arena_window == NULL)
-    {
-        // Hitung posisi dan ukuran arena window
-        int arena_x = (screenwidth / 2) - (map->width_tile_map * 2 / 2);
-        int arena_y = 4; // Di bawah gameplay_border top border
-
-        map->arena_window = newwin(
-            map->height_tile_map + 2,      // +2 untuk border
-            (map->width_tile_map * 2) + 2, // *2 untuk karakter lebar, +2 untuk border
-            arena_y,
-            arena_x);
-        keypad(map->arena_window, TRUE);  // Enable keypad untuk input
-        nodelay(map->arena_window, TRUE); // Non-blocking input
-    }
-
     PANEL *size_of_screen_p = new_panel(size_of_screen);
     PANEL *gameplay_border_p = new_panel(gameplay_border);
     PANEL *setting_border_p = new_panel(setting_border);
     PANEL *arena_p = NULL;
+
+    location_of_arena(1, 1, map);
 
     if (map && map->arena_window)
     {

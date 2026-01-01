@@ -36,16 +36,15 @@ int main(int argc, char const *argv[])
     init_tile_properties();
 
     game_state state = {
-        .current_map = create_map(40, 30), // arena_size dari kode Anda = 30
+        .current_map = create_map(25, 25), // arena_size dari kode Anda = 30
         .is_running = true,
         .skip_frame = false,
-        .last_move_time = 0,
-        .arena_size = 20};
+        .last_move_time = 0};
 
     // PERBAIKAN: Tampilkan pesan loading
     mvprintw(10, screenwidth / 2 - 10, "Loading Dungeon Game...");
     refresh();
-    napms(1000); // Tunggu sebentar
+    // napms(1000); // Tunggu sebentar
 
     int result = game(&state);
 
