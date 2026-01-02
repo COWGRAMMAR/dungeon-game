@@ -6,6 +6,72 @@
 #include <locale.h>
 #include "dungeon.h"
 
+#define DOOR_OPEN 1
+#define DOOR_CLOSED 0
+
+// fungsi gambar arena
+void create_room(game_map *map, int coordinate_x, int coordinate_y, int room_width, int room_height)
+{
+    if (!map || !map->tiles)
+        return;
+
+    // inisialisasi semua tile sebagai VOID
+    for (int y = 0; y < map->height_tile_map; y++)
+    {
+        for (int x = 0; x < map->width_tile_map; x++)
+        {
+            map->tiles[y][x] = TILE_VOID;
+        }
+    }
+
+    // posisi room
+    int room_x = ((map->width_tile_map - room_width) / 2) + coordinate_x;
+    int room_y = ((map->height_tile_map - room_height) / 2) + coordinate_y;
+
+    // simpan data posisi room
+    map->room_x = room_x;
+    map->room_y = room_y;
+    map->room_w = room_width;
+    map->room_h = room_height;
+
+    // set room bounds
+    init_room_bounds(map);
+
+    // buat floor
+    for (int y = room_y; y < room_y + room_height; y++)
+    {
+        for (int x = room_x; x < room_x + room_width; x++)
+        {
+            if (x >= 0 && x < map->width_tile_map && y >= 0 && y < map->height_tile_map)
+            {
+                map->tiles[y][x] = TILE_FLOOR;
+            }
+        }
+    }
+
+    // gambaer wall
+    for (int x = room_x; x < room_x + room_width; x++)
+    {
+        // atas
+        if (room_y - 1 >= 0)
+            map->tiles[room_y - 1][x] = TILE_WALL;
+        // bawah
+        if (room_y + room_height < map->height_tile_map)
+            map->tiles[room_y + room_height][x] = TILE_WALL;
+    }
+
+    for (int y = room_y; y < room_y + room_height; y++)
+    {
+        // kiri
+        if (room_x - 1 >= 0)
+            map->tiles[y][room_x - 1] = TILE_WALL;
+        // kanan
+        if (room_x + room_width < map->width_tile_map)
+            map->tiles[y][room_x + room_width] = TILE_WALL;
+    }
+}
+
+// wall yang rencana buat obstacle
 // wall function
 void wall(game_map *map)
 {
@@ -32,208 +98,91 @@ void wall(game_map *map)
     }
 }
 
-// door function
-void door(int type_dungeon_size, int type_door, int facing, game_map *map)
+// fungsi gambar pintu
+void door(DoorFacing facing, int door_size, int open, game_map *map)
 {
+    if (!map)
+        return;
 
-    int mid_y = map->height_tile_map / 2;
-    int mid_x = map->width_tile_map / 2;
+    int start_x = 0;
+    int start_y = 0;
+    int tile = open ? TILE_DOOR_OPEN : TILE_DOOR_CLOSED;
 
-    if (type_dungeon_size == 1)
+    switch (facing)
     {
-        if (type_door == 1)
-        {
-            switch (facing)
-            {
-            case 1:
-                // Pintu kiri
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[(mid_y - 1) + i][0] = TILE_DOOR_OPEN;
-                }
-                break;
+    case DOOR_LEFT:
+        start_x = map->room_x - 1;
+        start_y = map->room_y + (map->room_h - door_size) / 2;
+        for (int i = 0; i < door_size; i++)
+            map->tiles[start_y + i][start_x] = tile;
+        break;
 
-            case 2:
-                // pintu kanan
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[(mid_y - 1) + i][map->width_tile_map - 1] = TILE_DOOR_OPEN;
-                }
-                break;
-                // pintu atas
-            case 3:
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[0][(mid_x - 1) + i] = TILE_DOOR_OPEN;
-                }
-                break;
+    case DOOR_RIGHT:
+        start_x = map->room_x + map->room_w;
+        start_y = map->room_y + (map->room_h - door_size) / 2;
+        for (int i = 0; i < door_size; i++)
+            map->tiles[start_y + i][start_x] = tile;
+        break;
 
-            case 4:
-                // pintu bawah
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[map->height_tile_map - 1][(mid_x - 1) + i] = TILE_DOOR_OPEN;
-                }
-                break;
-            }
-        }
+    case DOOR_UP:
+        start_y = map->room_y - 1;
+        start_x = map->room_x + (map->room_w - door_size) / 2;
+        for (int i = 0; i < door_size; i++)
+            map->tiles[start_y][start_x + i] = tile;
+        break;
 
-        if (type_door == 0)
-        {
-            switch (facing)
-            {
-            case 1:
-                // Pintu kiri
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[(mid_y - 1) + i][0] = TILE_DOOR_CLOSED;
-                }
-                break;
-
-            case 2:
-                // pintu kanan
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[(mid_y - 1) + i][map->width_tile_map - 1] = TILE_DOOR_CLOSED;
-                }
-                break;
-                // pintu atas
-            case 3:
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[0][(mid_x - 1) + i] = TILE_DOOR_CLOSED;
-                }
-                break;
-
-            case 4:
-                // pintu bawah
-                for (int i = 0; i < 3; i++)
-                {
-                    map->tiles[map->height_tile_map - 1][(mid_x - 1) + i] = TILE_DOOR_CLOSED;
-                }
-                break;
-            }
-        }
-    }
-
-    if (type_dungeon_size == 2)
-    {
-        if (type_door == 1)
-        {
-            switch (facing)
-            {
-            case 1:
-                // Pintu kiri
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[(mid_y - 2) + i][0] = TILE_DOOR_OPEN;
-                }
-                break;
-
-            case 2:
-                // pintu kanan
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[(mid_y - 2) + i][map->width_tile_map - 1] = TILE_DOOR_OPEN;
-                }
-                break;
-                // pintu atas
-            case 3:
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[0][(mid_x - 2) + i] = TILE_DOOR_OPEN;
-                }
-                break;
-
-            case 4:
-                // pintu bawah
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[map->height_tile_map - 1][(mid_x - 2) + i] = TILE_DOOR_OPEN;
-                }
-                break;
-            }
-        }
-
-        if (type_door == 0)
-        {
-            switch (facing)
-            {
-            case 1:
-                // Pintu kiri
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[(mid_y - 2) + i][0] = TILE_DOOR_CLOSED;
-                }
-                break;
-
-            case 2:
-                // pintu kanan
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[(mid_y - 2) + i][map->width_tile_map - 1] = TILE_DOOR_CLOSED;
-                }
-                break;
-                // pintu atas
-            case 3:
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[0][(mid_x - 2) + i] = TILE_DOOR_CLOSED;
-                }
-                break;
-
-            case 4:
-                // pintu bawah
-                for (int i = 0; i < 4; i++)
-                {
-                    map->tiles[map->height_tile_map - 1][(mid_x - 2) + i] = TILE_DOOR_CLOSED;
-                }
-                break;
-            }
-        }
+    case DOOR_DOWN:
+        start_y = map->room_y + map->room_h;
+        start_x = map->room_x + (map->room_w - door_size) / 2;
+        for (int i = 0; i < door_size; i++)
+            map->tiles[start_y][start_x + i] = tile;
+        break;
     }
 }
 
-// door function 4 side
+// fungsi gambar pintu di semua sisi arena
 void door_4_side(int type_dungeon_size, int type_door, game_map *map)
 {
 
+    // gambar pintu untuk arena yang ukurannya ganjil
     if (type_dungeon_size == 1)
     {
         switch (type_door)
         {
         case 0:
-            door(1, 0, 1, map); // left
-            door(1, 0, 2, map); // top
-            door(1, 0, 3, map); // right
-            door(1, 0, 4, map); // bottom
+
+            door(DOOR_LEFT, 3, DOOR_CLOSED, map);  // kiri
+            door(DOOR_UP, 3, DOOR_CLOSED, map);    // atas
+            door(DOOR_RIGHT, 3, DOOR_CLOSED, map); // kanan
+            door(DOOR_DOWN, 3, DOOR_CLOSED, map);  // bawah
             break;
 
         case 1:
-            door(1, 1, 1, map); // left
-            door(1, 1, 2, map); // top
-            door(1, 1, 3, map); // right
-            door(1, 1, 4, map); // bottom
+            door(DOOR_LEFT, 4, DOOR_OPEN, map);  // kiri
+            door(DOOR_UP, 4, DOOR_OPEN, map);    // atas
+            door(DOOR_RIGHT, 4, DOOR_OPEN, map); // kanan
+            door(DOOR_DOWN, 4, DOOR_OPEN, map);  // bawah
+            break;
             break;
         }
     }
 
+    // gambar pintu untuk arena yang ukurannya genap
     if (type_dungeon_size == 2)
     {
         switch (type_door)
         {
         case 0:
-            door(2, 0, 1, map); // left
-            door(2, 0, 2, map); // top
-            door(2, 0, 3, map); // right
-            door(2, 0, 4, map); // bottom
+            door(DOOR_LEFT, 4, DOOR_CLOSED, map);  // kiri
+            door(DOOR_UP, 4, DOOR_CLOSED, map);    // atas
+            door(DOOR_RIGHT, 4, DOOR_CLOSED, map); // kanan
+            door(DOOR_DOWN, 4, DOOR_CLOSED, map);  // bawah
             break;
-
         case 1:
-            door(2, 1, 1, map); // left
-            door(2, 1, 2, map); // top
-            door(2, 1, 3, map); // right
-            door(2, 1, 4, map); // bottom
+            door(DOOR_LEFT, 4, DOOR_OPEN, map);  // kiri
+            door(DOOR_UP, 4, DOOR_OPEN, map);    // atas
+            door(DOOR_RIGHT, 4, DOOR_OPEN, map); // kanan
+            door(DOOR_DOWN, 4, DOOR_OPEN, map);  // bawah
             break;
         }
     }

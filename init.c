@@ -16,26 +16,21 @@ void set_console_char_size(short cols, short rows)
     if (hOut == INVALID_HANDLE_VALUE)
         return;
 
-    // step 1: Increase the buffer first (safe)
     COORD bufferSize = {cols, rows};
     SetConsoleScreenBufferSize(hOut, bufferSize);
 
-    // step 2: Set the window size according to the buffer
     SMALL_RECT windowSize = {0, 0, cols, rows};
     SetConsoleWindowInfo(hOut, TRUE, &windowSize);
 
-    // step 3: lock resize & maximize
     HWND hwnd = GetConsoleWindow();
     if (!hwnd)
         return;
 
-    // setup feature for windows terminal
     LONG style = GetWindowLong(hwnd, GWL_STYLE);
     style &= ~WS_MAXIMIZEBOX; // remove maximize button
     style &= ~WS_SIZEBOX;     // disabled resize via drag
     SetWindowLong(hwnd, GWL_STYLE, style);
 
-    // idk man what is this i just ai it for this whole function🥀🥀🥀
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
                  SWP_NOMOVE | SWP_NOSIZE |
                      SWP_NOZORDER | SWP_FRAMECHANGED);
@@ -44,18 +39,12 @@ void set_console_char_size(short cols, short rows)
 // initialize terminal function
 void init()
 {
-    // initialize extended ascii character
+
     setlocale(LC_ALL, "");
-
-    // initialize random generator
     srand(time(NULL));
-
-    // initialize window
     win = initscr();
-
     resize_term(screenheight, screenwidth);
 
-    // player input
     keypad(stdscr, TRUE);
     nodelay(stdscr, TRUE);
     noecho();

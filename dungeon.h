@@ -35,6 +35,7 @@ typedef enum
     TILE_WALL,
     TILE_DOOR_CLOSED,
     TILE_DOOR_OPEN,
+    TILE_VOID,
     TILE_COUNT
 } tile_type;
 
@@ -48,14 +49,22 @@ typedef struct
     int color_pair;
 } tile_properties;
 
-// room bounderies
-typedef struct 
+typedef enum
 {
-    int x, y;
-    int width, height;
-    bool is_active;
-} room_bounds;
+    DOOR_LEFT = 1,
+    DOOR_RIGHT,
+    DOOR_UP,
+    DOOR_DOWN
+} DoorFacing;
 
+// room bounderies
+typedef struct
+{
+    int x;
+    int y;
+    int width;
+    int height;
+} room_bounds;
 
 // structure map properties
 typedef struct
@@ -66,9 +75,12 @@ typedef struct
     vec2 player_dir;
     bool is_running;
     WINDOW *arena_window;
-    room_bounds room;
-    int room_x, room_y;        
-    int room_w, room_h; 
+    room_bounds active_room;
+
+    int room_x;
+    int room_y;
+    int room_w;
+    int room_h;
 } game_map;
 
 // game state
@@ -82,6 +94,7 @@ typedef struct
 
 #define DelayInput 75
 #define GameTick 16
+#define Tile_Count 5
 
 //============================== global function prototype ==============================//
 
@@ -120,16 +133,18 @@ void init_arena(game_map *map);
 void draw(game_map *map); // draw arena, player, etc
 int game(game_state *state);
 void map_destroy(game_map *map); // logic state game
+void init_room_bounds(game_map *map);
 
 //============================== logic function prototype ==============================//
 
 //============================== room function prototype ==============================//
-#define ROOM_SMALL   1
-#define ROOM_MEDIUM  2
-#define ROOM_LARGE   3
+#define ROOM_SMALL 1
+#define ROOM_MEDIUM 2
+#define ROOM_LARGE 3
 void wall(game_map *map);
-void door(int type_dungeon_size, int type_door, int facing, game_map *map);
+void door(DoorFacing facing, int door_size, int open, game_map *map);
 void door_4_side(int type_dungeon_size, int type_door, game_map *map);
+void create_room(game_map *map, int coordinate_x, int coordinate_y, int room_width, int room_height);
 
 //============================== room function prototype ==============================//
 #endif

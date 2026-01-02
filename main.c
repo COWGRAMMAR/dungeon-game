@@ -8,6 +8,10 @@
 
 int main(int argc, char const *argv[])
 {
+    set_console_char_size(screenwidth, screenheight);
+    init();
+    init_tile_properties();
+
     // process user args
     if (argc == 1)
     {
@@ -31,21 +35,12 @@ int main(int argc, char const *argv[])
         exit(1);
     }
 
-    set_console_char_size(screenwidth, screenheight);
-    init();
-    init_tile_properties();
-
+    game_map *map = create_map(34, 34);
     game_state state = {
-        .current_map = create_map(34, 34), // arena_size dari kode Anda = 30
+        .current_map = map,
         .is_running = true,
         .skip_frame = false,
         .last_move_time = 0};
-
-    // PERBAIKAN: Tampilkan pesan loading
-    mvprintw(10, screenwidth / 2 - 10, "Loading Dungeon Game...");
-    refresh();
-    // napms(1000); // Tunggu sebentar
-
     int result = game(&state);
 
     // Cleanup
@@ -55,9 +50,5 @@ int main(int argc, char const *argv[])
     }
 
     endwin();
-
-    // game();
-    printf("Game exited with code: %d\n", result);
-
     return result;
 }
