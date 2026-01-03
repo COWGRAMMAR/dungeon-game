@@ -57,6 +57,14 @@ typedef enum
     DOOR_DOWN
 } DoorFacing;
 
+typedef enum
+{
+    DOOR_CLOSED = 0,
+    DOOR_OPEN,
+    DOOR_ODD,
+    DOOR_EVEN
+} TypeDoor;
+
 // room bounderies
 typedef struct
 {
@@ -104,8 +112,9 @@ extern WINDOW *create_arena_box(int x, int y, int size_x, int size_y);  // arena
 extern WINDOW *create_box_center(int x, int y, int size_x, int size_y); // universal border with allign center
 extern WINDOW *create_box(int x, int y, int size_x, int size_y);        // universal border
 void location_of_arena(int x, int y, game_map *map);
-void ui_game(game_map *map); // ui for in game
-
+void ui_game(const game_state *state); // ui for in game
+void debug_box();
+void debug_panel(const game_state *state);
 //============================== ui function prototype ==============================//
 
 //============================== init function prototype ==============================//
@@ -138,13 +147,49 @@ void init_room_bounds(game_map *map);
 //============================== logic function prototype ==============================//
 
 //============================== room function prototype ==============================//
-#define ROOM_SMALL 1
-#define ROOM_MEDIUM 2
-#define ROOM_LARGE 3
-void wall(game_map *map);
+void wall(game_map *map, int coordinate_x, int coordinate_y, int room_width, int room_height);
 void door(DoorFacing facing, int door_size, int open, game_map *map);
 void door_4_side(int type_dungeon_size, int type_door, game_map *map);
-void create_room(game_map *map, int coordinate_x, int coordinate_y, int room_width, int room_height);
+void create_room(int coordinate_x, int coordinate_y, int room_width, int room_height, game_map *map);
+
+/*
+kode penamaan room
+
+4SO10x10G 
+
+artinya ->
+
+4s = banyak sisi yang menggunakan pintu
+o = tipe pintu yang terbuka
+10x10 = ukuran
+g = jenis room
+
+tabel prefix
+
+s = side
+o = open
+c = close
+C = chest
+G = general
+B = boss
+*/
+
+//desain template room
+void room_1(game_map *map); // 4so20x20G
+void room_2(game_map *map); // 4sc20x20G
+void room_3(game_map *map);
+void room_4(game_map *map);
+void room_5(game_map *map);
+void room_6(game_map *map);
+void room_7(game_map *map);
+void room_8(game_map *map);
+void room_9(game_map *map);
+void room_10(game_map *map);
+void room_11(game_map *map);
+void room_12(game_map *map);
+void room_13(game_map *map);
+void room_14(game_map *map);
+void room_15(game_map *map);
 
 //============================== room function prototype ==============================//
 #endif

@@ -262,11 +262,6 @@ void draw(game_map *map)
     mvwaddch(map->arena_window, map->player_dir.y + 1, (map->player_dir.x * 2) + 1, 'O'); // Karakter player dari kode Anda
     wattroff(map->arena_window, COLOR_PAIR(4) | A_BOLD);
 
-    // fungsi gambar debugging
-    /*mvwprintw(map->arena_window, 0, 1, "Player: (%d,%d) Room: (%d,%d)",
-              map->player_dir.x, map->player_dir.y,
-              map->room_x, map->room_y);*/
-
     wrefresh(map->arena_window);
 }
 
@@ -283,9 +278,13 @@ void create_simple_arena(game_map *map)
     map->player_dir = (vec2){mid_x, mid_y};
 
     // desain mapnya
-    create_room(map, -5, -2, 20, 20);
-    door_4_side(2, 0, map);
-    door(DOOR_LEFT, 4, 1, map);
+    room_3(map);
+    /*
+    room_1(map);
+    room_3(map);
+    room_3(map);
+    room_4(map);
+    */
 }
 
 // fungsi loop game utama
@@ -294,13 +293,15 @@ int game(game_state *state)
     if (!state || !state->current_map)
         return 1;
 
-    ui_game(state->current_map);
+    debug_box();
+    ui_game(state);
     create_simple_arena(state->current_map);
 
     // game loop utama
     while (state->is_running && state->current_map->is_running)
     {
         DWORD now = GetTickCount();
+        WINDOW *debug_border;
 
         // Input handling
         int event = input_movement_player(state->current_map);
@@ -314,6 +315,10 @@ int game(game_state *state)
 
         // Render
         draw(state->current_map);
+
+        // debug render
+        debug_panel(state);
+        
 
         // Delay
         napms(GameTick);

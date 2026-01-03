@@ -8,6 +8,7 @@
 #include <panel.h>
 
 WINDOW *size_of_screen;
+static WINDOW *debug_border = NULL;
 
 // fungsi gambar kotak dengan posisi center
 WINDOW *create_box_center(int x, int y, int size_x, int size_y)
@@ -43,14 +44,47 @@ void location_of_arena(int x, int y, game_map *map)
     }
 }
 
-// fungsi ui selama game
-void ui_game(game_map *map)
+// insialisasi box debug
+void debug_box()
 {
+    int allign_left = 2 * 55;
+    int allign_y_center = screenheight / 2;
+    debug_border = create_box(allign_left + 9, allign_y_center + 14, 11, 4);
+
+    PANEL *debug_border_p = new_panel(debug_border);
+    top_panel(debug_border_p); // panel debug di kanan
+    set_panel_userptr(debug_border_p, NULL);
+
+    update_panels();
+    doupdate();
+    wrefresh(debug_border);
+}
+
+// fungsi debug
+void debug_panel(const game_state *state)
+{
+    const game_map *map = state->current_map;
+    if (!map || !debug_border)
+        return;
+
+    werase(debug_border);
+    box(debug_border, 0, 0);
+    mvwprintw(debug_border, 1, 1, "Player: (%d,%d)", map->player_dir.x, map->player_dir.y);
+    mvwprintw(debug_border, 2, 1, "Room: (%d,%d)", map->room_w, map->room_h);
+
+    wrefresh(debug_border);
+}
+
+// fungsi ui selama game
+void ui_game(const game_state *state)
+{
+    game_map *map = state->current_map;
     if (!map)
         return;
 
-    //inisialisasi window untuk panel
+    // inisialisasi window untuk panel
     int allign_left = 2 * 55;
+   // int allign_y_center = screenheight / 2;
     WINDOW *setting_border;
     WINDOW *gameplay_border;
 
@@ -63,12 +97,13 @@ void ui_game(game_map *map)
     PANEL *size_of_screen_p = new_panel(size_of_screen);
     PANEL *gameplay_border_p = new_panel(gameplay_border);
     PANEL *setting_border_p = new_panel(setting_border);
-    PANEL *arena_p = NULL;
+    PANEL *arena_p;
     if (map && map->arena_window)
     {
         arena_p = new_panel(map->arena_window); // panel arena di dalam panel gameplay
     }
 
+    // lokasi dari keseluruhan map
     location_of_arena(0, 0, map);
 
     // urutan panel
